@@ -3,24 +3,34 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children, role, requireVerified = false }) => {
-  const { user, isAuthenticated, loading } = useAuth();
-  
+  const { user, loading, isAuthenticated } = useAuth();
+
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+      </div>
+    );
   }
-  
+
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
-  
-  if (role && user.role !== role) {
-    return <Navigate to="/" />;
+
+  // Check role
+  if (role && user?.role !== role) {
+    return <Navigate to="/" replace />;
   }
-  
-  if (requireVerified && (!user.isVerified || user.verificationStatus !== 'approved')) {
-    return <Navigate to="/seller/verify" />;
+
+  // Check verification - allow pending users to access
+  if (requireVerified) {
+    // Allow access if verified OR pending (documents submitted)
+    const canAccess = user?.isVerified === true || user?.verificationStatus === 'pending';
+    if (!canAccess) {
+      return <Navigate to="/seller/verify" replace />;
+    }
   }
-  
+
   return children;
 };
 

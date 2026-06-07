@@ -62,12 +62,7 @@ const Navbar = () => {
           <button className="navbar-mobile-toggle-macos" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
-           <button 
-              className="bg-settings-btn-macos-nav"
-              onClick={() => setShowBgInput(!showBgInput)}
-            >
-              <FaCamera /> Theme
-            </button>
+           
           <div className={`navbar-menu-macos ${isMenuOpen ? 'active' : ''}`}>
             <Link to="/livestock" className="navbar-link-macos" onClick={() => setIsMenuOpen(false)}>
               Browse

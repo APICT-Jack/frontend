@@ -1,0 +1,536 @@
+/* LivestockDetail.css - FIXED BUTTON WIDTHS */
+
+.zzz999_livestock_page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-bottom: 120px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.zzz999_header {
+  position: sticky;
+  top: 0;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  z-index: 100;
+  border-bottom: 1px solid #eee;
+}
+
+.zzz999_back_btn {
+  background: #f0f0f0;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.zzz999_header_actions {
+  display: flex;
+  gap: 12px;
+}
+
+.zzz999_icon_btn {
+  background: #f0f0f0;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.zzz999_gallery {
+  background: white;
+}
+
+.zzz999_main_img_box {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+.zzz999_main_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zzz999_img_counter {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.zzz999_thumbnails {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+}
+
+.zzz999_thumb {
+  flex-shrink: 0;
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.zzz999_thumb_active {
+  border-color: #4CAF50;
+}
+
+.zzz999_thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zzz999_content {
+  background: white;
+  border-radius: 20px 20px 0 0;
+  margin-top: -20px;
+  position: relative;
+  z-index: 10;
+  padding: 20px 16px;
+  padding-bottom: 30px;
+}
+
+.zzz999_price_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.zzz999_price_box {
+  display: flex;
+  flex-direction: column;
+}
+
+.zzz999_price_label {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.zzz999_price_value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.zzz999_status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.zzz999_status_available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.zzz999_status_sold {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.zzz999_status_reserved {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.zzz999_title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.zzz999_type {
+  color: #666;
+  font-size: 14px;
+  text-transform: capitalize;
+  margin-bottom: 20px;
+}
+
+.zzz999_details_grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.zzz999_detail_card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zzz999_detail_icon {
+  font-size: 22px;
+  color: #4CAF50;
+}
+
+.zzz999_detail_label {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.zzz999_detail_value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.zzz999_tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.zzz999_tag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.zzz999_tag_vaccinated {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.zzz999_tag_quantity {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.zzz999_warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  background: #fff3cd;
+  border-left: 4px solid #ff9800;
+}
+
+.zzz999_warning svg {
+  color: #ff9800;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.zzz999_warning strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #856404;
+  font-size: 14px;
+}
+
+.zzz999_warning p {
+  font-size: 12px;
+  color: #856404;
+  margin: 0;
+}
+
+.zzz999_verified {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  background: #d4edda;
+  border-left: 4px solid #4CAF50;
+}
+
+.zzz999_verified svg {
+  color: #4CAF50;
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.zzz999_verified strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #155724;
+  font-size: 14px;
+}
+
+.zzz999_verified p {
+  font-size: 12px;
+  color: #155724;
+  margin: 0;
+}
+
+.zzz999_section_title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.zzz999_description {
+  color: #666;
+  line-height: 1.6;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.zzz999_seller_card {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.zzz999_seller_avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.zzz999_seller_name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.zzz999_seller_business, 
+.zzz999_seller_address, 
+.zzz999_seller_phone {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* DESKTOP BUTTONS */
+.zzz999_desktop_btns {
+  display: none;
+  gap: 16px;
+  margin: 24px 0;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+/* MOBILE BUTTONS - VERTICAL WITH PROPER WIDTH */
+.zzz999_mobile_btns {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 12px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ACTION BUTTON STYLES - PROPERLY SIZED */
+.zzz999_action_btn {
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Mobile buttons - full width but with margins */
+.zzz999_mobile_btns .zzz999_action_btn {
+  width: calc(100% - 0px);
+  margin: 0;
+}
+
+.zzz999_btn_contact {
+  background: #4CAF50;
+  color: white;
+}
+
+.zzz999_btn_inquire {
+  background: #2196F3;
+  color: white;
+}
+
+.zzz999_action_btn:active {
+  transform: scale(0.98);
+}
+
+.zzz999_footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  font-size: 11px;
+  color: #999;
+}
+
+/* ==================== */
+/* DESKTOP STYLES */
+/* ==================== */
+@media (min-width: 768px) {
+  .zzz999_livestock_page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-bottom: 0;
+  }
+  
+  .zzz999_main_img_box {
+    height: 450px;
+  }
+  
+  /* HIDE mobile buttons on desktop */
+  .zzz999_mobile_btns {
+    display: none;
+  }
+  
+  /* SHOW desktop buttons on desktop */
+  .zzz999_desktop_btns {
+    display: flex;
+  }
+  
+  /* Desktop buttons - side by side */
+  .zzz999_desktop_btns .zzz999_action_btn {
+    width: 50%;
+    flex: 1;
+  }
+  
+  .zzz999_action_btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .zzz999_thumb:hover {
+    transform: scale(1.05);
+  }
+}
+
+@media (min-width: 1024px) {
+  .zzz999_livestock_page {
+    max-width: 1200px;
+  }
+  
+  .zzz999_main_img_box {
+    height: 500px;
+  }
+  
+  .zzz999_content {
+    padding: 24px;
+  }
+}
+
+/* Small mobile - adjust button padding */
+@media (max-width: 80px) {
+  .zzz999_details_grid {
+    gap: 8px;
+  }
+  
+  .zzz999_detail_card {
+    padding: 10px;
+  }
+  
+  .zzz999_detail_icon {
+    font-size: 18px;
+  }
+  
+  .zzz999_detail_value {
+    font-size: 12px;
+  }
+  
+  .zzz999_price_value {
+    font-size: 24px;
+  }
+  
+  .zzz999_title {
+    font-size: 20px;
+  }
+  
+  .zzz999_mobile_btns {
+    padding: 10px 12px 16px;
+    gap: 8px;
+  }
+  
+  .zzz999_action_btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+  .zzz999_mobile_btns {
+    padding: 8px 10px 14px;
+    gap: 6px;
+  }
+  
+  .zzz999_action_btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
