@@ -1,75 +1,46 @@
-import React, { useState, useEffect } from 'react';
+// LivestockList.jsx - Using the same LivestockCard component as HomePage
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaFilter, FaTimes, FaSlidersH } from 'react-icons/fa';
-import { GiCow } from 'react-icons/gi';
+import { 
+  FaFilter, 
+  FaTimes, 
+  FaSlidersH, 
+  FaSearch, 
+  FaChevronDown,
+  FaChevronUp,
+  FaSort,
+  FaSortAmountDown,
+  FaSortAmountUp,
+  FaThLarge,
+  FaList,
+  FaMapMarkerAlt
+} from 'react-icons/fa';
+import { GiCow, GiChicken, GiGoat, GiSheep, GiPig } from 'react-icons/gi';
 import LivestockCard from './LivestockCard';
 import './LivestockList.css';
-
-// Import all background images directly
-import chickenBg from '.././Backgrounds/chicken.jpg';
-import cow1Bg from '.././Backgrounds/cow1.jpg';
-import cow2Bg from '.././Backgrounds/cow2.jpg';
-import cowsBg from '.././Backgrounds/cows.jpg';
-import dairyBg from '.././Backgrounds/dairy.jpg';
-import goatBg from '.././Backgrounds/goat.jpg';
-import pigBg from '.././Backgrounds/pig.jpg';
-import roosterBg from '.././Backgrounds/rooster.jpg';
-import sheepBg from '.././Backgrounds/sheep.jpg';
-import wildlifeBg from '.././Backgrounds/wildlife.jpg';
-
-// Array of background images
-const BACKGROUND_IMAGES = [
-  chickenBg,
-  cow1Bg,
-  cow2Bg,
-  cowsBg,
-  dairyBg,
-  goatBg,
-  pigBg,
-  roosterBg,
-  sheepBg,
-  wildlifeBg
-];
-
-const DEFAULT_BG = "https://images.pexels.com/photos/4825704/beautiful-shot-of-cattle-grazing-on-a-lush-green-field-under-a-cloudy-sky/pexels-photo-4825704.jpeg";
-const SLIDESHOW_INTERVAL = 5000;
 
 const LivestockList = () => {
   const [livestock, setLivestock] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
-  const [backgroundImage, setBackgroundImage] = useState(BACKGROUND_IMAGES[0] || DEFAULT_BG);
   const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+  const [viewMode, setViewMode] = useState('grid');
   const [filters, setFilters] = useState({
     type: '',
     minPrice: '',
     maxPrice: '',
     location: ''
   });
-
-  // Automatic background slideshow
-  useEffect(() => {
-    if (BACKGROUND_IMAGES[0]) {
-      setBackgroundImage(BACKGROUND_IMAGES[0]);
-    }
-    
-    const intervalId = setInterval(() => {
-      setCurrentBackgroundIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % BACKGROUND_IMAGES.length;
-        if (BACKGROUND_IMAGES[nextIndex]) {
-          setBackgroundImage(BACKGROUND_IMAGES[nextIndex]);
-        }
-        return nextIndex;
-      });
-    }, SLIDESHOW_INTERVAL);
-    
-    return () => clearInterval(intervalId);
-  }, []);
+  const [sortBy, setSortBy] = useState('newest');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const filterPanelRef = useRef(null);
+  const sortPanelRef = useRef(null);
 
   useEffect(() => {
     fetchLivestock();
-  }, [filters]);
+  }, [filters, sortBy]);
 
   const fetchLivestock = async () => {
     setLoading(true);
@@ -79,9 +50,12 @@ const LivestockList = () => {
       if (filters.minPrice) params.append('minPrice', filters.minPrice);
       if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
       if (filters.location) params.append('location', filters.location);
+      if (searchQuery) params.append('search', searchQuery);
+      params.append('sort', sortBy);
+      params.append('limit', '20');
       
       const response = await axios.get(`http://localhost:5000/api/livestock?${params}`);
-      setLivestock(response.data.livestock);
+      setLivestock(response.data.livestock || []);
     } catch (error) {
       console.error('Error fetching livestock:', error);
     } finally {
@@ -103,177 +77,315 @@ const LivestockList = () => {
       maxPrice: '',
       location: ''
     });
+    setSearchQuery('');
+    setSortBy('newest');
   };
 
-  const hasActiveFilters = filters.type || filters.minPrice || filters.maxPrice || filters.location;
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchLivestock();
+  };
+
+  const getTypeIcon = (type) => {
+    switch(type?.toLowerCase()) {
+      case 'cattle': return <GiCow />;
+      case 'sheep': return <GiSheep />;
+      case 'goat': return <GiGoat />;
+      case 'pig': return <GiPig />;
+      case 'chicken': return <GiChicken />;
+      default: return <GiCow />;
+    }
+  };
+
+  const getSortLabel = () => {
+    switch(sortBy) {
+      case 'price_asc': return 'Price: Low to High';
+      case 'price_desc': return 'Price: High to Low';
+      case 'newest': return 'Newest First';
+      case 'oldest': return 'Oldest First';
+      default: return 'Sort By';
+    }
+  };
+
+  const hasActiveFilters = filters.type || filters.minPrice || filters.maxPrice || filters.location || searchQuery;
+  const totalActiveFilters = Object.values(filters).filter(f => f).length + (searchQuery ? 1 : 0);
+
+  // Close panels when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterPanelRef.current && !filterPanelRef.current.contains(event.target) && showFilters) {
+        setShowFilters(false);
+      }
+      if (sortPanelRef.current && !sortPanelRef.current.contains(event.target) && showSort) {
+        setShowSort(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFilters, showSort]);
 
   return (
-    <div 
-      className="livestock-list-container"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Overlay for better readability */}
-      <div className="background-overlay"></div>
-      
-      {/* Main Content */}
-      <div className="livestock-main-content">
-        {/* Page Header */}
-        <div className="page-header">
-          <h1>Available Livestock</h1>
-          <p>Find quality livestock from trusted sellers across South Africa</p>
-        </div>
-
-        {/* Sticky Filter Bar - Only Filter Component */}
-        <div className="sticky-filter-bar">
-          <div className="sticky-filter-content">
-            <div className="filter-toggle" onClick={() => setShowFilters(!showFilters)}>
-              <FaSlidersH />
-              <span>Filters</span>
-              {hasActiveFilters && <span className="filter-badge">{Object.values(filters).filter(f => f).length}</span>}
-            </div>
-            
-            <div className="sticky-filter-group">
-              <select 
-                name="type" 
-                value={filters.type} 
-                onChange={handleFilterChange}
-                className="sticky-filter-select"
-              >
-                <option value="">All Types</option>
-                <option value="cattle">🐄 Cattle</option>
-                <option value="sheep">🐑 Sheep</option>
-                <option value="goat">🐐 Goat</option>
-                <option value="pig">🐷 Pig</option>
-                <option value="chicken">🐔 Chicken</option>
-              </select>
-            </div>
-            
-            <div className="sticky-filter-group">
-              <input 
-                type="text" 
-                name="location" 
-                value={filters.location}
-                placeholder="Location" 
-                onChange={handleFilterChange}
-                className="sticky-filter-input"
-              />
-            </div>
-            
-            <div className="sticky-filter-group price-group">
-              <input 
-                type="number" 
-                name="minPrice" 
-                value={filters.minPrice}
-                placeholder="Min Price" 
-                onChange={handleFilterChange}
-                className="sticky-filter-input price-input"
-              />
-              <span>-</span>
-              <input 
-                type="number" 
-                name="maxPrice" 
-                value={filters.maxPrice}
-                placeholder="Max Price" 
-                onChange={handleFilterChange}
-                className="sticky-filter-input price-input"
-              />
-            </div>
-            
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className="sticky-clear-btn">
-                <FaTimes /> Clear
+    <div className="ll_page">
+      {/* Hero Section */}
+      <div className="ll_hero">
+        <div className="ll_hero_content">
+          <h1 className="ll_hero_title">Available Livestock</h1>
+          <p className="ll_hero_subtitle">Find quality livestock from trusted sellers across South Africa</p>
+          
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="ll_search_bar">
+            <FaSearch className="ll_search_icon" />
+            <input 
+              type="text" 
+              placeholder="Search by breed, type, or location..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="ll_search_input"
+            />
+            {searchQuery && (
+              <button type="button" className="ll_search_clear" onClick={() => setSearchQuery('')}>
+                <FaTimes />
               </button>
             )}
-          </div>
+            <button type="submit" className="ll_search_button">Search</button>
+          </form>
         </div>
+      </div>
 
-        {/* Expanded Filters Panel */}
-        <div className={`expanded-filters ${showFilters ? 'visible' : ''}`}>
-          <div className="expanded-filters-content">
-            <div className="filter-group-expanded">
-              <label>Animal Type</label>
-              <select name="type" value={filters.type} onChange={handleFilterChange}>
-                <option value="">All Types</option>
-                <option value="cattle">🐄 Cattle</option>
-                <option value="sheep">🐑 Sheep</option>
-                <option value="goat">🐐 Goat</option>
-                <option value="pig">🐷 Pig</option>
-                <option value="chicken">🐔 Chicken</option>
-                <option value="horse">🐴 Horse</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            
-            <div className="filter-group-expanded">
-              <label>Min Price (ZAR)</label>
-              <input 
-                type="number" 
-                name="minPrice" 
-                value={filters.minPrice}
-                placeholder="e.g., 5000" 
-                onChange={handleFilterChange} 
-              />
-            </div>
-            
-            <div className="filter-group-expanded">
-              <label>Max Price (ZAR)</label>
-              <input 
-                type="number" 
-                name="maxPrice" 
-                value={filters.maxPrice}
-                placeholder="e.g., 50000" 
-                onChange={handleFilterChange} 
-              />
-            </div>
-            
-            <div className="filter-group-expanded">
-              <label>Location</label>
-              <input 
-                type="text" 
-                name="location" 
-                value={filters.location}
-                placeholder="City or Province" 
-                onChange={handleFilterChange} 
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* Results Count */}
-        <div className="results-count">
-          Showing <strong>{livestock.length}</strong> {livestock.length === 1 ? 'listing' : 'listings'}
-        </div>
-        
-        {/* Livestock Grid */}
-        {loading ? (
-          <div className="loading-grid">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="loading-card"></div>
-            ))}
-          </div>
-        ) : livestock.length > 0 ? (
-          <div className="livestock-grid">
-            {livestock.map((item) => (
-              <LivestockCard key={item._id} livestock={item} />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <GiCow className="empty-icon" />
-            <h3>No livestock found</h3>
-            <p>Try adjusting your filters or check back later for new listings</p>
-            <button onClick={clearFilters} className="clear-filters-btn">
-              Clear Filters
+      {/* Sticky Control Bar */}
+      <div className="ll_control_bar">
+        <div className="ll_control_content">
+          <button 
+            className={`ll_control_btn ${showFilters ? 'active' : ''}`} 
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <FaSlidersH />
+            <span>Filters</span>
+            {hasActiveFilters && <span className="ll_badge">{totalActiveFilters}</span>}
+          </button>
+          
+          <button 
+            className={`ll_control_btn ${showSort ? 'active' : ''}`} 
+            onClick={() => setShowSort(!showSort)}
+          >
+            <FaSort />
+            <span>{getSortLabel()}</span>
+            {showSort ? <FaChevronUp /> : <FaChevronDown />}
+          </button>
+          
+          <div className="ll_view_toggle">
+            <button 
+              className={`ll_view_btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              aria-label="Grid view"
+            >
+              <FaThLarge />
+            </button>
+            <button 
+              className={`ll_view_btn ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => setViewMode('list')}
+              aria-label="List view"
+            >
+              <FaList />
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Sort Panel */}
+      {showSort && (
+        <div className="ll_sort_panel" ref={sortPanelRef}>
+          <div className="ll_sort_header">
+            <h3>Sort By</h3>
+            <button onClick={() => setShowSort(false)} className="ll_sort_close">
+              <FaTimes />
+            </button>
+          </div>
+          <div className="ll_sort_options">
+            <button 
+              className={`ll_sort_option ${sortBy === 'newest' ? 'active' : ''}`}
+              onClick={() => { setSortBy('newest'); setShowSort(false); }}
+            >
+              <FaSortAmountDown /> Newest First
+            </button>
+            <button 
+              className={`ll_sort_option ${sortBy === 'oldest' ? 'active' : ''}`}
+              onClick={() => { setSortBy('oldest'); setShowSort(false); }}
+            >
+              <FaSortAmountUp /> Oldest First
+            </button>
+            <button 
+              className={`ll_sort_option ${sortBy === 'price_asc' ? 'active' : ''}`}
+              onClick={() => { setSortBy('price_asc'); setShowSort(false); }}
+            >
+              <FaSortAmountDown /> Price: Low to High
+            </button>
+            <button 
+              className={`ll_sort_option ${sortBy === 'price_desc' ? 'active' : ''}`}
+              onClick={() => { setSortBy('price_desc'); setShowSort(false); }}
+            >
+              <FaSortAmountUp /> Price: High to Low
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="ll_filter_panel" ref={filterPanelRef}>
+          <div className="ll_filter_header">
+            <h3>Filter Livestock</h3>
+            <button onClick={() => setShowFilters(false)} className="ll_filter_close">
+              <FaTimes />
+            </button>
+          </div>
+          
+          <div className="ll_filter_content">
+            {/* Type Filter */}
+            <div className="ll_filter_group">
+              <label className="ll_filter_label">Animal Type</label>
+              <div className="ll_type_options">
+                {['', 'cattle', 'sheep', 'goat', 'pig', 'chicken'].map((type) => (
+                  <button
+                    key={type || 'all'}
+                    className={`ll_type_option ${filters.type === type ? 'active' : ''}`}
+                    onClick={() => setFilters({ ...filters, type })}
+                  >
+                    {type ? getTypeIcon(type) : <GiCow />}
+                    <span>{type ? type.charAt(0).toUpperCase() + type.slice(1) : 'All'}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="ll_filter_group">
+              <label className="ll_filter_label">Price Range (ZAR)</label>
+              <div className="ll_price_range">
+                <input 
+                  type="number" 
+                  name="minPrice" 
+                  value={filters.minPrice}
+                  placeholder="Min" 
+                  onChange={handleFilterChange} 
+                  className="ll_price_input"
+                />
+                <span>to</span>
+                <input 
+                  type="number" 
+                  name="maxPrice" 
+                  value={filters.maxPrice}
+                  placeholder="Max" 
+                  onChange={handleFilterChange} 
+                  className="ll_price_input"
+                />
+              </div>
+            </div>
+
+            {/* Location */}
+            <div className="ll_filter_group">
+              <label className="ll_filter_label">Location</label>
+              <div className="ll_location_input_wrapper">
+                <FaMapMarkerAlt className="ll_location_icon" />
+                <input 
+                  type="text" 
+                  name="location" 
+                  value={filters.location}
+                  placeholder="City or Province" 
+                  onChange={handleFilterChange} 
+                  className="ll_location_input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="ll_filter_actions">
+            {hasActiveFilters && (
+              <button onClick={clearFilters} className="ll_clear_btn">
+                Clear All
+              </button>
+            )}
+            <button onClick={() => setShowFilters(false)} className="ll_apply_btn">
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Results Count */}
+      <div className="ll_results_header">
+        <div className="ll_results_count">
+          <span className="ll_count_number">{livestock.length}</span>
+          <span className="ll_count_text">{livestock.length === 1 ? 'Listing' : 'Listings'} Found</span>
+        </div>
+        {hasActiveFilters && (
+          <button onClick={clearFilters} className="ll_clear_all_btn">
+            <FaTimes /> Clear All Filters
+          </button>
         )}
       </div>
+
+      {/* Active Filters Display */}
+      {hasActiveFilters && (
+        <div className="ll_active_filters">
+          {filters.type && (
+            <span className="ll_active_filter">
+              {getTypeIcon(filters.type)} {filters.type}
+              <button onClick={() => setFilters({ ...filters, type: '' })}>×</button>
+            </span>
+          )}
+          {(filters.minPrice || filters.maxPrice) && (
+            <span className="ll_active_filter">
+              R{filters.minPrice || '0'} - R{filters.maxPrice || '∞'}
+              <button onClick={() => setFilters({ ...filters, minPrice: '', maxPrice: '' })}>×</button>
+            </span>
+          )}
+          {filters.location && (
+            <span className="ll_active_filter">
+              <FaMapMarkerAlt /> {filters.location}
+              <button onClick={() => setFilters({ ...filters, location: '' })}>×</button>
+            </span>
+          )}
+          {searchQuery && (
+            <span className="ll_active_filter">
+              Search: "{searchQuery}"
+              <button onClick={() => setSearchQuery('')}>×</button>
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Livestock Grid/List - Using the same LivestockCard component */}
+      {loading ? (
+        <div className="ll_loading_grid">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="ll_loading_card">
+              <div className="ll_loading_image"></div>
+              <div className="ll_loading_content">
+                <div className="ll_loading_title"></div>
+                <div className="ll_loading_price"></div>
+                <div className="ll_loading_location"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : livestock.length > 0 ? (
+        <div className={`ll_results ${viewMode === 'grid' ? 'll_grid_view' : 'll_list_view'}`}>
+          {livestock.map((item) => (
+            <LivestockCard key={item._id} livestock={item} />
+          ))}
+        </div>
+      ) : (
+        <div className="ll_empty_state">
+          <div className="ll_empty_icon">🐮</div>
+          <h3 className="ll_empty_title">No Livestock Found</h3>
+          <p className="ll_empty_message">Try adjusting your filters or check back later for new listings</p>
+          <button onClick={clearFilters} className="ll_empty_button">
+            Clear All Filters
+          </button>
+        </div>
+      )}
     </div>
   );
 };
